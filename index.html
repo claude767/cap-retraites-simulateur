@@ -1,864 +1,886 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-<meta name="description" content="Audit express retraite CAP RETRAITES — estimez en 30 secondes l'écart potentiel sur votre future pension. Profession libérale, dirigeant, TNS, cadre supérieur.">
-<title>Simulateur retraite — CAP RETRAITES</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulateur Retraite – Cap Retraites</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<!-- ==========================================================
-     CONFIGURATION — À REMPLIR
-     ========================================================== -->
-<script>
-  // URL du webhook Make.com (scénario "Cap Retraites — Simulateur Lead Capture")
-  window.MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/5kuyavl7al0eo955jv3bf75zafglx7qo";
+    :root {
+      --bordeaux: #7D2B3E;
+      --bordeaux-light: #9B3A52;
+      --bordeaux-pale: #F8F0F2;
+      --gold: #C9A55A;
+      --gold-pale: #FDF8EC;
+      --bg: #FAF8F5;
+      --white: #FFFFFF;
+      --grey-line: #E5DDD6;
+      --text: #1C1C1C;
+      --text-muted: #7A6C65;
+      --text-light: #B0A49C;
+      --green: #2D8653;
+      --green-pale: #EBF7F1;
+      --orange: #C8611A;
+      --orange-pale: #FEF3E7;
+      --red: #B52B2B;
+      --red-pale: #FDECEA;
+    }
 
-  // URL du calendrier de prise de RDV (CTA final)
-  window.RDV_URL = "https://bit.ly/AUDIT60minutes";
-</script>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 16px 48px;
+    }
 
-<style>
-:root {
-  --bordeaux: #7D2B3E;
-  --bordeaux-light: #9B3A52;
-  --bordeaux-pale: #F8F0F2;
-  --gold: #C9A55A;
-  --gold-light: #DBBD7E;
-  --gold-pale: #FDF8EC;
-  --bg: #FAF8F5;
-  --white: #FFFFFF;
-  --grey-line: #E5DDD6;
-  --text: #1C1C1C;
-  --text-muted: #7A6C65;
-  --text-light: #B0A49C;
-  --green: #2D8653;
-  --green-pale: #EBF7F1;
-  --orange: #C8611A;
-  --orange-pale: #FEF3E7;
-  --red: #B52B2B;
-  --red-pale: #FDECEA;
-  --shadow-sm: 0 1px 3px rgba(28,28,28,0.06);
-  --shadow-md: 0 4px 12px rgba(28,28,28,0.08);
-  --shadow-lg: 0 12px 32px rgba(125,43,62,0.15);
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
-  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
+    .wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+    }
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+    /* BRAND */
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-name {
+      display: inline-block;
+      background: var(--bordeaux);
+      color: #fff;
+      font-family: 'Georgia', serif;
+      font-size: 13px;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      padding: 7px 22px 8px;
+      margin-bottom: 8px;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
 
-html { scroll-behavior: smooth; }
+    /* CARD */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--grey-line);
+      border-top: 4px solid var(--bordeaux);
+      padding: 36px 40px 40px;
+      box-shadow: 0 4px 28px rgba(125,43,62,0.08);
+    }
 
-body {
-  font-family: 'Georgia', 'Times New Roman', serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.55;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  padding: 0 16px 64px;
-}
+    .card-title {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      font-weight: normal;
+      color: var(--text);
+      line-height: 1.38;
+      margin-bottom: 10px;
+    }
+    .card-intro {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      border-left: 3px solid var(--gold);
+      padding-left: 14px;
+      margin-bottom: 32px;
+    }
 
-/* ========== HEADER ========== */
-.brand {
-  text-align: center;
-  padding: 28px 0 18px;
-  border-bottom: 1px solid var(--grey-line);
-  margin-bottom: 36px;
-}
-.brand-name {
-  display: inline-block;
-  background: var(--bordeaux);
-  color: var(--white);
-  padding: 8px 18px;
-  border-radius: 4px;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-.brand-sub {
-  display: block;
-  margin-top: 10px;
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 500;
-}
+    /* PROGRESS */
+    .progress-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+    .progress-step {
+      flex: 1;
+      height: 3px;
+      background: var(--grey-line);
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+    .progress-step.done { background: var(--bordeaux); }
+    .progress-step.active { background: var(--gold); }
 
-/* ========== WRAPPER ========== */
-.wrapper {
-  max-width: 720px;
-  margin: 0 auto;
-}
+    /* FORM */
+    .form-block {
+      margin-bottom: 28px;
+    }
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: block;
+    }
+    .form-label span {
+      color: var(--bordeaux);
+      font-weight: 700;
+    }
 
-.card {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: 36px 32px;
-  border: 1px solid var(--grey-line);
-}
+    /* AGE INPUT */
+    .age-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .age-input {
+      width: 100px;
+      height: 54px;
+      border: 2px solid var(--grey-line);
+      border-radius: 4px;
+      font-size: 30px;
+      font-family: 'Georgia', serif;
+      text-align: center;
+      color: var(--bordeaux);
+      background: #FDFBF9;
+      outline: none;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+    }
+    .age-input::-webkit-inner-spin-button,
+    .age-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .age-input:focus { border-color: var(--bordeaux); background: #fff; }
+    .age-unit { font-size: 14px; color: var(--text-muted); }
 
-/* ========== HEADLINE ========== */
-.card-title {
-  font-size: 28px;
-  font-weight: 400;
-  color: var(--text);
-  line-height: 1.25;
-  margin-bottom: 10px;
-}
-.card-intro {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
-  color: var(--text-muted);
-  border-left: 3px solid var(--gold);
-  padding-left: 14px;
-  margin-bottom: 28px;
-  line-height: 1.6;
-}
+    /* RADIO CARDS */
+    .radio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .radio-grid.four-col {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .radio-card {
+      position: relative;
+    }
+    .radio-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .radio-card label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 14px 10px 12px;
+      border: 2px solid var(--grey-line);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      min-height: 72px;
+      gap: 6px;
+      background: #FDFBF9;
+    }
+    .radio-card input[type="radio"]:checked + label {
+      border-color: var(--bordeaux);
+      background: var(--bordeaux-pale);
+    }
+    .radio-card label:hover {
+      border-color: var(--bordeaux-light);
+    }
+    .radio-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .radio-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .radio-detail {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
 
-/* ========== PROGRESS BAR ========== */
-.progress-bar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-bottom: 32px;
-}
-.progress-step {
-  height: 4px;
-  background: var(--grey-line);
-  border-radius: 2px;
-  transition: background var(--transition);
-}
-.progress-step.active { background: var(--gold); }
-.progress-step.done { background: var(--bordeaux); }
+    /* PILLS (compact radios) */
+    .pills-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pill-card {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+    .pill-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .pill-card label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10px 8px;
+      border: 2px solid var(--grey-line);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      background: #FDFBF9;
+      white-space: nowrap;
+    }
+    .pill-card input[type="radio"]:checked + label {
+      border-color: var(--bordeaux);
+      background: var(--bordeaux);
+      color: #fff;
+    }
+    .pill-card label:hover {
+      border-color: var(--bordeaux-light);
+    }
 
-/* ========== FORM BLOCKS ========== */
-.form-block {
-  margin-bottom: 28px;
-}
-.form-label {
-  display: block;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--bordeaux);
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.step-num {
-  display: inline-block;
-  background: var(--bordeaux-pale);
-  color: var(--bordeaux);
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-right: 8px;
-  font-weight: 700;
-}
+    /* CTA BUTTON */
+    .btn-calc {
+      width: 100%;
+      height: 54px;
+      background: var(--bordeaux);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    .btn-calc:hover { background: var(--bordeaux-light); }
+    .btn-calc:disabled { background: #C0B0AB; cursor: default; }
 
-/* ========== AGE INPUT ========== */
-.age-row {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 12px;
-}
-.age-input {
-  width: 96px;
-  padding: 14px 16px;
-  border: 2px solid var(--grey-line);
-  border-radius: var(--radius-sm);
-  font-size: 18px;
-  font-family: 'Georgia', serif;
-  font-weight: 600;
-  text-align: center;
-  background: var(--white);
-  color: var(--text);
-  transition: border-color var(--transition);
-}
-.age-input:focus {
-  outline: none;
-  border-color: var(--bordeaux);
-}
-.age-unit {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
-  color: var(--text-muted);
-}
+    .error-msg {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 6px;
+      display: none;
+    }
 
-/* ========== RADIO CARDS (statut) ========== */
-.radio-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.radio-card {
-  position: relative;
-  cursor: pointer;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: rgba(125,43,62,0.1);
-}
-.radio-card input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.radio-card label {
-  display: block;
-  padding: 18px 16px;
-  border: 2px solid var(--grey-line);
-  border-radius: var(--radius-md);
-  background: var(--white);
-  text-align: center;
-  cursor: pointer;
-  transition: all var(--transition);
-  min-height: 100px;
-}
-.radio-card input[type="radio"]:checked + label {
-  border-color: var(--bordeaux);
-  background: var(--bordeaux-pale);
-  box-shadow: var(--shadow-md);
-}
-.radio-icon {
-  font-size: 26px;
-  display: block;
-  margin-bottom: 6px;
-}
-.radio-text {
-  display: block;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-.radio-hint {
-  display: block;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
+    /* DIVIDER */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, var(--grey-line), var(--gold), var(--grey-line));
+      margin: 36px 0;
+    }
 
-/* ========== STATUS PILLS (durée / revenus) ========== */
-.pill-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.pill {
-  flex: 1 1 calc(25% - 8px);
-  min-width: 120px;
-  padding: 12px 16px;
-  border: 1.5px solid var(--grey-line);
-  border-radius: 100px;
-  background: var(--white);
-  color: var(--text);
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: all var(--transition);
-  text-align: center;
-  -webkit-tap-highlight-color: rgba(125,43,62,0.1);
-}
-.pill:hover, .pill:focus {
-  border-color: var(--bordeaux-light);
-  outline: none;
-}
-.pill.selected {
-  background: var(--bordeaux);
-  color: var(--white);
-  border-color: var(--bordeaux);
-}
+    /* RESULTS */
+    .results { display: none; }
+    .results.visible { display: block; animation: fadeUp 0.5s ease; }
 
-/* ========== TRANSITIONS BLOCK ========== */
-.transitions-label {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-}
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-/* ========== CALCULER BUTTON ========== */
-.error-msg {
-  display: none;
-  color: var(--red);
-  background: var(--red-pale);
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 13px;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  margin-bottom: 12px;
-}
-.error-msg.visible { display: block; }
-.btn-calc {
-  width: 100%;
-  padding: 18px 24px;
-  background: var(--bordeaux);
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: all var(--transition);
-  -webkit-tap-highlight-color: rgba(255,255,255,0.2);
-  min-height: 56px;
-}
-.btn-calc:hover { background: var(--bordeaux-light); }
-.btn-calc:disabled {
-  background: var(--text-light);
-  cursor: not-allowed;
-}
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 3px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 22px;
+    }
 
-/* ========== RESULTS ========== */
-.results {
-  display: none;
-  margin-top: 36px;
-}
-.results.visible { display: block; }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .metric-box {
+      border: 1px solid var(--grey-line);
+      border-radius: 4px;
+      padding: 18px 12px;
+      text-align: center;
+      background: #FDFBF9;
+    }
+    .metric-box.primary {
+      background: var(--bordeaux);
+      border-color: var(--bordeaux);
+    }
+    .metric-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 7px;
+      line-height: 1.4;
+    }
+    .metric-box.primary .metric-label { color: rgba(255,255,255,0.7); }
+    .metric-value {
+      font-family: 'Georgia', serif;
+      font-size: 26px;
+      color: var(--bordeaux);
+      line-height: 1;
+    }
+    .metric-box.primary .metric-value { color: #fff; }
+    .metric-unit {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+    .metric-box.primary .metric-unit { color: rgba(255,255,255,0.65); }
 
-.results-card {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: 36px 32px;
-  margin-top: 24px;
-  border: 1px solid var(--grey-line);
-}
+    /* Error categories */
+    .error-cats-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .error-cats {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .error-cat {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text);
+    }
+    .error-cat-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--bordeaux);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
 
-.risk-badge {
-  display: inline-block;
-  padding: 10px 18px;
-  border-radius: 100px;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-}
-.risk-badge.low { background: var(--green-pale); color: var(--green); }
-.risk-badge.medium { background: var(--orange-pale); color: var(--orange); }
-.risk-badge.high { background: var(--red-pale); color: var(--red); }
+    /* Quote */
+    .quote-block {
+      background: var(--gold-pale);
+      border-left: 3px solid var(--gold);
+      padding: 14px 16px;
+      margin-bottom: 22px;
+    }
+    .quote-block p {
+      font-family: 'Georgia', serif;
+      font-size: 13px;
+      font-style: italic;
+      color: #5A4840;
+      line-height: 1.65;
+      margin-bottom: 5px;
+    }
+    .quote-block cite {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+    }
 
-.metrics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 30px;
-}
-.metric-box {
-  background: var(--bg);
-  border: 1px solid var(--grey-line);
-  border-radius: var(--radius-md);
-  padding: 18px 14px;
-  text-align: center;
-}
-.metric-box.primary {
-  background: var(--bordeaux);
-  color: var(--white);
-  border-color: var(--bordeaux);
-}
-.metric-label {
-  display: block;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  line-height: 1.3;
-}
-.metric-box.primary .metric-label {
-  color: rgba(255,255,255,0.85);
-}
-.metric-value {
-  display: block;
-  font-family: 'Georgia', serif;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-.metric-box.primary .metric-value { color: var(--white); }
-.metric-unit {
-  display: block;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 11px;
-  color: var(--text-muted);
-}
-.metric-box.primary .metric-unit { color: rgba(255,255,255,0.7); }
+    /* Urgency text */
+    .urgency-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.65;
+      text-align: center;
+      margin-bottom: 26px;
+    }
+    .urgency-text strong { color: var(--bordeaux); }
 
-.anomalies-title {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--bordeaux);
-  text-transform: uppercase;
-  margin: 30px 0 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--grey-line);
-}
-.anomalies-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 30px;
-}
-.anomalies-list li {
-  padding: 12px 0 12px 28px;
-  position: relative;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
-  color: var(--text);
-  border-bottom: 1px solid var(--grey-line);
-}
-.anomalies-list li:last-child { border-bottom: none; }
-.anomalies-list li::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 18px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--bordeaux);
-}
+    /* Dispositifs non évalués */
+    .dispositifs-block {
+      background: #FDF8EC;
+      border: 1px solid #C9A55A;
+      border-radius: 6px;
+      padding: 18px 20px;
+      margin-bottom: 22px;
+    }
+    .dispositifs-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #8B6914;
+      margin-bottom: 14px;
+    }
+    .dispositif-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 11px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #4A3728;
+    }
+    .dispositif-item:last-child { margin-bottom: 0; }
+    .dispositif-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #C9A55A;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .dispositifs-footer {
+      font-size: 11px;
+      color: #8B6914;
+      font-style: italic;
+      margin-top: 12px;
+      border-top: 1px solid #E8D89A;
+      padding-top: 10px;
+    }
 
-/* ========== EMAIL GATE ========== */
-.email-gate {
-  display: none;
-  margin-top: 30px;
-  padding: 30px 24px;
-  background: var(--gold-pale);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--gold);
-  text-align: center;
-}
-.email-gate.visible { display: block; }
-.gate-title {
-  font-family: 'Georgia', serif;
-  font-size: 20px;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-.gate-sub {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-.email-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.email-input {
-  flex: 1 1 220px;
-  min-width: 180px;
-  padding: 14px 18px;
-  border: 2px solid var(--grey-line);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  color: var(--text);
-  transition: border-color var(--transition);
-}
-.email-input:focus {
-  outline: none;
-  border-color: var(--bordeaux);
-}
-.btn-unlock {
-  padding: 14px 22px;
-  background: var(--bordeaux);
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: background var(--transition);
-  min-height: 50px;
-  min-width: 180px;
-}
-.btn-unlock:hover { background: var(--bordeaux-light); }
-.btn-unlock:disabled { background: var(--text-light); cursor: wait; }
-.gate-privacy {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 11px;
-  color: var(--text-light);
-  line-height: 1.55;
-  text-align: left;
-  margin-top: 10px;
-}
-.gate-privacy a {
-  color: var(--bordeaux);
-  text-decoration: underline;
-}
+    /* CTAs */
+    .cta-stack { display: flex; flex-direction: column; gap: 12px; }
+    .btn-primary, .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      height: 54px;
+      border-radius: 4px;
+      font-size: 14.5px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.2px;
+    }
+    .btn-primary {
+      background: var(--bordeaux);
+      color: #fff;
+      border: none;
+    }
+    .btn-primary:hover { background: var(--bordeaux-light); }
+    .btn-secondary {
+      background: #fff;
+      color: var(--bordeaux);
+      border: 2px solid var(--bordeaux);
+    }
+    .btn-secondary:hover { background: var(--bordeaux); color: #fff; }
 
-/* Consent RGPD */
-.consent-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  text-align: left;
-  margin-top: 16px;
-  padding: 12px 14px;
-  background: var(--white);
-  border: 1px solid var(--grey-line);
-  border-radius: var(--radius-sm);
-}
-.consent-row input[type="checkbox"] {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  accent-color: var(--bordeaux);
-  cursor: pointer;
-}
-.consent-row label {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  cursor: pointer;
-}
-.consent-row label a {
-  color: var(--bordeaux);
-  text-decoration: underline;
-  font-weight: 500;
-}
+    /* Disclaimer */
+    .disclaimer-block {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #F4F6F9;
+      border: 1px solid #D8DFE8;
+      border-radius: 4px;
+      padding: 14px 16px;
+      margin-top: 20px;
+      margin-bottom: 6px;
+    }
+    .disclaimer-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .disclaimer-text {
+      font-size: 12px;
+      color: #4A5568;
+      line-height: 1.65;
+    }
+    .disclaimer-text strong {
+      color: #2D3748;
+    }
 
-/* Honeypot : invisible mais valide */
-.hp-field {
-  position: absolute !important;
-  left: -9999px !important;
-  top: -9999px !important;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-}
+    .footer-note {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
 
-/* Disclaimer résultats */
-.results-disclaimer {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 11px;
-  color: var(--text-light);
-  line-height: 1.6;
-  margin-top: 20px;
-  padding: 14px 16px;
-  background: var(--bg);
-  border-left: 3px solid var(--gold);
-  border-radius: 4px;
-}
-.results-disclaimer strong { color: var(--text-muted); }
+    .recalc-link {
+      display: block;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 20px;
+      background: none;
+      border: none;
+      font-family: inherit;
+    }
+    .recalc-link:hover { color: var(--bordeaux); }
 
-/* ========== FINAL CTA ========== */
-.cta-final {
-  display: none;
-  margin-top: 30px;
-  padding: 36px 28px;
-  background: linear-gradient(135deg, var(--bordeaux) 0%, var(--bordeaux-light) 100%);
-  color: var(--white);
-  border-radius: var(--radius-lg);
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-}
-.cta-final.visible { display: block; }
-.cta-title {
-  font-family: 'Georgia', serif;
-  font-size: 22px;
-  margin-bottom: 10px;
-  line-height: 1.3;
-}
-.cta-sub {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
-  opacity: 0.9;
-  margin-bottom: 22px;
-  line-height: 1.5;
-}
-.cta-btn {
-  display: inline-block;
-  padding: 16px 32px;
-  background: var(--gold);
-  color: var(--white);
-  text-decoration: none;
-  border-radius: 100px;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  transition: all var(--transition);
-  box-shadow: 0 4px 14px rgba(201,165,90,0.4);
-}
-.cta-btn:hover {
-  background: var(--gold-light);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(201,165,90,0.5);
-}
+    /* EMAIL GATE */
+    .email-gate {
+      display: none;
+    }
+    .email-gate.visible {
+      display: block;
+      animation: fadeUp 0.5s ease;
+    }
+    .gate-ready-badge {
+      display: inline-block;
+      background: var(--green-pale);
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 3px;
+      margin-bottom: 16px;
+    }
+    .gate-title {
+      font-family: 'Georgia', serif;
+      font-size: 21px;
+      font-weight: normal;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .gate-sub {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .email-input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .email-input {
+      flex: 1;
+      height: 50px;
+      border: 2px solid var(--grey-line);
+      border-radius: 4px;
+      font-size: 14px;
+      padding: 0 14px;
+      color: var(--text);
+      background: #FDFBF9;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: 'Arial', sans-serif;
+    }
+    .email-input:focus {
+      border-color: var(--bordeaux);
+      background: #fff;
+    }
+    .btn-unlock {
+      height: 50px;
+      padding: 0 20px;
+      background: var(--bordeaux);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      font-family: 'Arial', sans-serif;
+    }
+    .btn-unlock:hover { background: var(--bordeaux-light); }
+    .email-error-msg {
+      font-size: 12px;
+      color: var(--red);
+      display: none;
+    }
+    .gate-privacy {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 10px;
+    }
 
-/* ========== MOBILE ========== */
-@media (max-width: 600px) {
-  body { padding: 0 12px 48px; }
-  .card { padding: 24px 18px; }
-  .card-title { font-size: 22px; }
-  .radio-grid { grid-template-columns: 1fr; }
-  .radio-card label { min-height: 80px; padding: 14px; }
-  .metrics-grid { grid-template-columns: 1fr; gap: 10px; }
-  .metric-value { font-size: 24px; }
-  .pill { flex: 1 1 calc(50% - 8px); min-width: 0; }
-  .email-form { flex-direction: column; }
-  .btn-unlock { width: 100%; }
-  .results-card { padding: 24px 18px; }
-  .cta-final { padding: 28px 20px; }
-  .cta-title { font-size: 18px; }
-}
-
-@media (max-width: 380px) {
-  .pill { flex: 1 1 100%; }
-}
-
-/* Empêche le zoom auto iOS sur les inputs */
-input[type="email"],
-input[type="text"],
-input[type="number"] {
-  font-size: 16px !important;
-}
-</style>
+    /* Responsive */
+    @media (max-width: 480px) {
+      .card { padding: 24px 18px 28px; }
+      .card-title { font-size: 20px; }
+      .radio-grid { grid-template-columns: 1fr 1fr; }
+      .radio-grid.four-col { grid-template-columns: 1fr 1fr; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+      .metrics-grid .metric-box:last-child { grid-column: span 2; }
+      .metric-value { font-size: 22px; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ==========================================================
-     BRAND HEADER
-     ========================================================== -->
-<header class="brand">
-  <span class="brand-name">CAP RETRAITES</span>
-  <span class="brand-sub">Conseil expert en stratégie retraite</span>
-</header>
-
-<!-- ==========================================================
-     WRAPPER
-     ========================================================== -->
 <div class="wrapper">
 
-  <!-- ===== STEP 1 : FORMULAIRE ===== -->
-  <section class="card" id="formCard">
-    <h1 class="card-title">Quel est votre écart de pension estimé&nbsp;?</h1>
-    <p class="card-intro">4 questions. 30 secondes. Une estimation indicative basée sur votre profil — à valider par un audit individuel.</p>
+  <div class="brand">
+    <div class="brand-name">Cap Retraites</div>
+    <div class="brand-sub">Conseil expert en stratégie retraite</div>
+  </div>
 
-    <div class="progress-bar" aria-label="Progression du formulaire">
-      <div class="progress-step" id="pb1"></div>
+  <div class="card">
+
+    <h1 class="card-title">Quelle est votre perte de pension estimée&nbsp;?</h1>
+    <p class="card-intro">
+      4 questions. 30 secondes. Une estimation personnalisée basée sur votre profil réel &mdash; pas une moyenne.
+    </p>
+
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-step active" id="pb1"></div>
       <div class="progress-step" id="pb2"></div>
       <div class="progress-step" id="pb3"></div>
       <div class="progress-step" id="pb4"></div>
     </div>
 
-    <form id="simForm" novalidate>
+    <!-- FORMULAIRE -->
+    <div id="formSection">
 
       <!-- Q1 : Âge -->
       <div class="form-block">
-        <label class="form-label" for="ageInput">
-          <span class="step-num">01</span> Votre âge actuel
-        </label>
+        <label class="form-label" for="ageInput"><span>01 —</span> Votre âge actuel</label>
         <div class="age-row">
-          <input type="number" id="ageInput" class="age-input" min="35" max="75" placeholder="55" inputmode="numeric" autocomplete="off">
+          <input type="number" id="ageInput" class="age-input" min="35" max="75" placeholder="55" inputmode="numeric" />
           <span class="age-unit">ans</span>
         </div>
       </div>
 
       <!-- Q2 : Statut -->
       <div class="form-block">
-        <label class="form-label">
-          <span class="step-num">02</span> Votre statut professionnel principal
-        </label>
+        <label class="form-label"><span>02 —</span> Votre statut professionnel principal</label>
         <div class="radio-grid">
-
           <div class="radio-card">
-            <input type="radio" name="statut" id="s1" value="liberal_cipav">
+            <input type="radio" name="statut" id="s1" value="liberal_cipav" />
             <label for="s1">
-              <span class="radio-icon" aria-hidden="true">⚖️</span>
+              <span class="radio-icon">⚖️</span>
               <span class="radio-text">Profession libérale</span>
-              <span class="radio-hint">CIPAV, CAVEC, CARPV…</span>
+              <span class="radio-detail">CIPAV, CAVEC, CARPV…</span>
             </label>
           </div>
-
           <div class="radio-card">
-            <input type="radio" name="statut" id="s2" value="liberal_regl">
+            <input type="radio" name="statut" id="s2" value="liberal_reglemente" />
             <label for="s2">
-              <span class="radio-icon" aria-hidden="true">🩺</span>
+              <span class="radio-icon">🏥</span>
               <span class="radio-text">Libéral réglementé</span>
-              <span class="radio-hint">Médecin, pharmacien, kiné, notaire…</span>
+              <span class="radio-detail">Médecin, pharmacien, kiné, notaire…</span>
             </label>
           </div>
-
           <div class="radio-card">
-            <input type="radio" name="statut" id="s3" value="tns">
+            <input type="radio" name="statut" id="s3" value="tns" />
             <label for="s3">
-              <span class="radio-icon" aria-hidden="true">🛠️</span>
+              <span class="radio-icon">🏭</span>
               <span class="radio-text">TNS / Indépendant</span>
-              <span class="radio-hint">Artisan, commerçant, SSI (ex-RSI)</span>
+              <span class="radio-detail">Artisan, commerçant, SSI (ex-RSI)</span>
             </label>
           </div>
-
           <div class="radio-card">
-            <input type="radio" name="statut" id="s4" value="gerant">
+            <input type="radio" name="statut" id="s4" value="gerant" />
             <label for="s4">
-              <span class="radio-icon" aria-hidden="true">💼</span>
+              <span class="radio-icon">🏢</span>
               <span class="radio-text">Dirigeant de société</span>
-              <span class="radio-hint">Gérant EURL/SARL, PDG/DG salarié</span>
+              <span class="radio-detail">Gérant EURL/SARL, PDG/DG salarié</span>
             </label>
           </div>
-
         </div>
       </div>
 
-      <!-- Q3 : Années hors RG -->
+      <!-- Q3 : Durée -->
       <div class="form-block">
-        <label class="form-label">
-          <span class="step-num">03</span> Années passées en dehors du régime général
-        </label>
-        <div class="pill-grid" data-field="duree">
-          <button type="button" class="pill" data-value="moins5">&lt; 5 ans</button>
-          <button type="button" class="pill" data-value="5a10">5 à 10 ans</button>
-          <button type="button" class="pill" data-value="10a20">10 à 20 ans</button>
-          <button type="button" class="pill" data-value="plus20">&gt; 20 ans</button>
+        <label class="form-label"><span>03 —</span> Années passées en dehors du régime général</label>
+        <div class="pills-row">
+          <div class="pill-card">
+            <input type="radio" name="duree" id="d1" value="moins5" />
+            <label for="d1">< 5 ans</label>
+          </div>
+          <div class="pill-card">
+            <input type="radio" name="duree" id="d2" value="5a10" />
+            <label for="d2">5 – 10 ans</label>
+          </div>
+          <div class="pill-card">
+            <input type="radio" name="duree" id="d3" value="10a20" />
+            <label for="d3">10 – 20 ans</label>
+          </div>
+          <div class="pill-card">
+            <input type="radio" name="duree" id="d4" value="plus20" />
+            <label for="d4">> 20 ans</label>
+          </div>
         </div>
       </div>
 
       <!-- Q4 : Revenus -->
       <div class="form-block">
-        <label class="form-label">
-          <span class="step-num">04</span> Revenu annuel moyen (BNC / BIC / rémunération)
-        </label>
-        <div class="pill-grid" data-field="revenus">
-          <button type="button" class="pill" data-value="moins50">&lt; 50 k€</button>
-          <button type="button" class="pill" data-value="50a100">50 à 100 k€</button>
-          <button type="button" class="pill" data-value="100a200">100 à 200 k€</button>
-          <button type="button" class="pill" data-value="plus200">&gt; 200 k€</button>
+        <label class="form-label"><span>04 —</span> Revenu annuel moyen (BNC / BIC / rémunération)</label>
+        <div class="pills-row">
+          <div class="pill-card">
+            <input type="radio" name="revenus" id="r1" value="moins50" />
+            <label for="r1">< 50 k€</label>
+          </div>
+          <div class="pill-card">
+            <input type="radio" name="revenus" id="r2" value="50a100" />
+            <label for="r2">50 – 100 k€</label>
+          </div>
+          <div class="pill-card">
+            <input type="radio" name="revenus" id="r3" value="100a200" />
+            <label for="r3">100 – 200 k€</label>
+          </div>
+          <div class="pill-card">
+            <input type="radio" name="revenus" id="r4" value="plus200" />
+            <label for="r4">> 200 k€</label>
+          </div>
         </div>
       </div>
 
-      <!-- Q5 : Transitions (optionnel) -->
+      <!-- Q5 : Transitions -->
       <div class="form-block">
-        <p class="transitions-label">+ Avez-vous changé de statut au cours de votre carrière&nbsp;?</p>
-        <div class="pill-grid" data-field="transitions">
-          <button type="button" class="pill" data-value="aucune">Non, toujours le même</button>
-          <button type="button" class="pill" data-value="une">1 transition</button>
-          <button type="button" class="pill" data-value="deux_plus">2 transitions ou plus</button>
+        <label class="form-label"><span>+</span> Avez-vous changé de statut au cours de votre carrière&nbsp;?</label>
+        <div class="pills-row">
+          <div class="pill-card">
+            <input type="radio" name="transitions" id="t1" value="aucune" />
+            <label for="t1">Non, toujours le même</label>
+          </div>
+          <div class="pill-card">
+            <input type="radio" name="transitions" id="t2" value="une" />
+            <label for="t2">1 transition</label>
+          </div>
+          <div class="pill-card">
+            <input type="radio" name="transitions" id="t3" value="deux_plus" />
+            <label for="t3">2 transitions ou plus</label>
+          </div>
         </div>
       </div>
 
-      <div class="error-msg" id="errorMsg">Merci de renseigner tous les champs avant de calculer.</div>
+      <span class="error-msg" id="errorMsg">Merci de renseigner tous les champs avant de calculer.</span>
+      <button class="btn-calc" id="calcBtn" onclick="calculate()">
+        Calculer mon estimation personnalisée →
+      </button>
 
-      <button type="submit" class="btn-calc" id="btnCalc">Calculer mon estimation personnalisée →</button>
+    </div><!-- /formSection -->
 
-    </form>
-  </section>
+    <!-- ÉTAPE INTERMÉDIAIRE : Capture email -->
+    <div class="email-gate" id="emailGate">
+      <div class="divider"></div>
+      <div class="gate-ready-badge">✅ Votre estimation est prête</div>
+      <h2 class="gate-title">Où souhaitez-vous recevoir vos résultats&nbsp;?</h2>
+      <p class="gate-sub">Laissez votre email professionnel pour débloquer votre estimation personnalisée et la recevoir instantanément dans votre boîte.</p>
+      <form id="emailForm" onsubmit="submitEmail(event)">
+        <input type="hidden" name="_subject" value="Nouvelle estimation simulateur Cap Retraites" />
+        <input type="hidden" name="_replyto" id="hiddenReplyTo" />
+        <input type="hidden" name="profil_age" id="hiddenAge" />
+        <input type="hidden" name="profil_statut" id="hiddenStatut" />
+        <input type="hidden" name="profil_duree" id="hiddenDuree" />
+        <input type="hidden" name="profil_revenus" id="hiddenRevenus" />
+        <input type="hidden" name="profil_transitions" id="hiddenTransitions" />
+        <input type="hidden" name="estimation_mensuelle" id="hiddenMonthly" />
+        <input type="hidden" name="estimation_20ans" id="hiddenTotal" />
+        <input type="hidden" name="niveau_risque" id="hiddenRisk" />
+        <div class="email-input-row">
+          <input
+            type="email"
+            id="emailInput"
+            name="email"
+            class="email-input"
+            placeholder="votre@email-pro.fr"
+            required
+            inputmode="email"
+          />
+          <button type="submit" class="btn-unlock">Recevoir mon estimation →</button>
+        </div>
+        <span class="email-error-msg" id="emailErrorMsg">Merci d'entrer un email valide.</span>
+      </form>
+      <p class="gate-privacy">🔒 Aucun spam. Utilisé uniquement pour vous transmettre vos résultats.</p>
+    </div>
 
-  <!-- ===== STEP 2 : RÉSULTATS ===== -->
-  <section class="results" id="results">
+    <!-- RÉSULTATS -->
+    <div class="results" id="results">
 
-    <div class="results-card">
-      <div class="risk-badge" id="riskBadge">Risque détecté</div>
+      <div class="divider"></div>
+
+      <div id="riskBadge" class="risk-badge"></div>
+
       <div class="metrics-grid">
         <div class="metric-box">
-          <span class="metric-label">Manque à gagner mensuel estimé</span>
-          <span class="metric-value" id="metricMonthly">—</span>
-          <span class="metric-unit">€ / mois de retraite</span>
+          <div class="metric-label">Perte mensuelle estimée</div>
+          <div class="metric-value" id="metricMonthly">—</div>
+          <div class="metric-unit">€ / mois de retraite</div>
         </div>
         <div class="metric-box primary">
-          <span class="metric-label">Impact cumulé sur 20 ans</span>
-          <span class="metric-value" id="metricTotal">—</span>
-          <span class="metric-unit">€ potentiellement non perçus</span>
+          <div class="metric-label">Impact sur 20 ans</div>
+          <div class="metric-value" id="metric20ans">—</div>
+          <div class="metric-unit">€ non perçus</div>
         </div>
         <div class="metric-box">
-          <span class="metric-label">Catégories d'anomalies à vérifier</span>
-          <span class="metric-value" id="metricCat">—</span>
-          <span class="metric-unit">points à contrôler</span>
+          <div class="metric-label">Catégories d'anomalies</div>
+          <div class="metric-value" id="metricCats">—</div>
+          <div class="metric-unit">points à contrôler</div>
         </div>
       </div>
 
-      <h3 class="anomalies-title">Anomalies fréquentes sur ce type de profil</h3>
-      <ul class="anomalies-list" id="anomaliesList"></ul>
+      <div class="error-cats-title">Catégories d'anomalies fréquentes sur ce type de profil</div>
+      <div class="error-cats" id="errorCatsList"></div>
 
-      <p class="results-disclaimer">
-        <strong>* Estimation indicative</strong> basée sur les moyennes statistiques observées sur votre profil.
-        Seule une expertise individuelle, à partir de votre relevé de carrière réel, permet d'obtenir un chiffrage certain.
-        Les résultats affichés ne constituent pas un conseil personnalisé.
+      <div class="quote-block">
+        <p>«&nbsp;La correcte prise en compte des cotisations versées par les travailleurs indépendants est imparfaitement assurée.&nbsp;»</p>
+        <cite>— Cour des Comptes</cite>
+      </div>
+
+      <p class="urgency-text" id="urgencyMsg"></p>
+
+      <div class="dispositifs-block">
+        <div class="dispositifs-title">⚠️ Dispositifs stratégiques non évalués sur votre profil</div>
+        <div class="dispositif-item"><div class="dispositif-dot"></div><span><strong>Retraite progressive</strong> — Avez-vous envisagé de liquider partiellement votre retraite tout en maintenant une activité réduite ? Ce dispositif peut générer plusieurs centaines d'euros par mois de revenus complémentaires immédiats, sans attendre la liquidation totale.</span></div>
+        <div class="dispositif-item"><div class="dispositif-dot"></div><span><strong>Rachat de trimestres</strong> — La rentabilité d'un rachat dépend de votre âge, de votre taux de décote actuel et de votre espérance de vie. Sans simulation précise, il est impossible de savoir si c'est une opportunité rentable ou un coût inutile.</span></div>
+        <div class="dispositif-item"><div class="dispositif-dot"></div><span><strong>Carrière longue</strong> — 4 paliers existent selon votre âge d'entrée dans la vie active : départ possible dès 58 ans si vous avez cotisé 5 trimestres avant vos 16 ans, dès 60 ans avant 18 ans, entre 60 et 62 ans avant 20 ans, et un 4ème palier à 21 ans. Ces conditions ne sont jamais vérifiées automatiquement par les caisses — et la réforme 2023 est suspendue en 2026-2027.</span></div>
+        <div class="dispositif-item"><div class="dispositif-dot"></div><span><strong>Surcote non maximisée</strong> — Chaque trimestre cotisé au-delà de la durée requise génère +1,25 % définitif sur votre pension. Un report de 2 ans peut représenter +10 % à vie. Ce calcul est presque jamais réalisé avant liquidation.</span></div>
+        <div class="dispositif-item"><div class="dispositif-dot"></div><span><strong>Cumul emploi-retraite</strong> — Le cumul emploi-retraite intégral, tel qu'il existe aujourd'hui, est en cours de réforme (LFSS 2026). Les règles applicables aux nouveaux retraités changent au 1er janvier 2027. Si vous approchez de la retraite, ce dispositif doit être évalué maintenant, avant que les nouvelles conditions moins favorables s'appliquent.</span></div>
+        <div class="dispositif-item"><div class="dispositif-dot"></div><span><strong>Invalidité, incapacité permanente, handicap (RQTH)</strong> — Si vous avez traversé ou traversez une période d'invalidité, une incapacité AT/MP ou bénéficiez d'une reconnaissance RQTH, des droits spécifiques à départ anticipé (dès 55 ans) existent et sont quasi systématiquement ignorés lors de la liquidation.</span></div>
+        <div class="dispositifs-footer">Ces dispositifs ne sont jamais proposés spontanément par les caisses. L'audit offert permet de les évaluer précisément sur votre situation en 60 minutes.</div>
+      </div>
+
+      <div class="cta-stack">
+        <a
+          href="https://calendar.app.google/q4jusgztsWydu9X5A"
+          target="_blank"
+          rel="noopener"
+          class="btn-primary"
+        >
+          <span>📅</span> Réserver mon audit offert – gratuit &amp; sans engagement
+        </a>
+        <a
+          href="https://cdn.prod.website-files.com/69721e6caf2d823f3bce22b6/69d5017fc5c24f19b82015a7_guide_100_questions_cap_retraites_31032026.pdf"
+          download="guide_100_questions_cap_retraites.pdf"
+          class="btn-secondary"
+          id="pdfBtn"
+        >
+          <span>📄</span> Les 100 questions à vous poser avant de commencer votre parcours retraite
+        </a>
+      </div>
+
+      <div class="disclaimer-block">
+        <div class="disclaimer-icon">ℹ️</div>
+        <div class="disclaimer-text">
+          <strong>Ces chiffres sont des estimations indicatives</strong>, établies à partir des études internes menées par le cabinet Cap Retraites sur l'ensemble de son portefeuille clients, ainsi que des données statistiques officielles publiées par la Cour des Comptes et le CPSTI. Elles ne constituent pas un audit individuel de votre relevé de carrière. L'audit offert est un rendez-vous de diagnostic&nbsp;: il permet de faire le point complet sur les zones d'incertitude de votre dossier et d'identifier ce qui pourrait provoquer ce différentiel de pension. C'est à l'issue de cet échange que vous choisissez, si vous le souhaitez, l'une des <strong>3 formules d'accompagnement Cap Retraites</strong> — de la simple clarification à la délégation totale jusqu'au premier versement.
+        </div>
+      </div>
+
+      <p class="footer-note">
+        Claude Castanet – CAP RETRAITES &middot; St-Georges-les-Baillargeaux &middot; 06&nbsp;51&nbsp;22&nbsp;88&nbsp;20
       </p>
 
-      <!-- EMAIL GATE -->
-      <div class="email-gate visible" id="emailGate">
-        <h3 class="gate-title">Recevez votre estimation détaillée par email</h3>
-        <p class="gate-sub">Laissez-nous une adresse email pour recevoir le détail complet de votre estimation et nos recommandations stratégiques.</p>
-        <form class="email-form" id="emailForm" novalidate>
-          <input type="email" id="emailInput" class="email-input" placeholder="Votre email" required autocomplete="email">
-          <!-- Honeypot : champ caché pour piéger les bots (les humains ne le voient pas) -->
-          <div class="hp-field" aria-hidden="true">
-            <label for="hpWebsite">Site web (laisser vide)</label>
-            <input type="text" id="hpWebsite" name="website" tabindex="-1" autocomplete="off" value="">
-          </div>
-          <button type="submit" class="btn-unlock" id="btnUnlock">Recevoir mon estimation</button>
-        </form>
+      <button class="recalc-link" onclick="reset()">← Modifier mes réponses</button>
 
-        <div class="consent-row">
-          <input type="checkbox" id="rgpdConsent" required>
-          <label for="rgpdConsent">
-            J'accepte de recevoir mon estimation et les communications de CAP RETRAITES liées à l'audit retraite. Mes données sont traitées conformément à la <a href="https://www.cap-retraites.fr/politique-de-confidentialite" target="_blank" rel="noopener noreferrer">politique de confidentialité</a>.
-          </label>
-        </div>
+    </div><!-- /results -->
 
-        <p class="gate-privacy">
-          🔒 Responsable de traitement : CAP RETRAITES — Claude Castanet.
-          Données transmises à nos outils d'envoi et de relation client (Make, La Growth Machine, Gmail) uniquement pour vous adresser votre estimation et nos communications.
-          Vous pouvez exercer vos droits d'accès, rectification, suppression et opposition en écrivant à <a href="mailto:contact@cap-retraites.fr">contact@cap-retraites.fr</a>.
-        </p>
-      </div>
+  </div><!-- /card -->
+</div><!-- /wrapper -->
 
-    </div>
-
-    <!-- CTA FINAL : RDV -->
-    <div class="cta-final" id="ctaFinal">
-      <h3 class="cta-title">Prêt(e) à transformer cette estimation en plan concret&nbsp;?</h3>
-      <p class="cta-sub">1 heure d'audit retraite avec Claude Castanet, offert. On regarde ensemble votre situation réelle et les leviers de gain.</p>
-      <a href="https://bit.ly/AUDIT60minutes" target="_blank" rel="noopener noreferrer" class="cta-btn" id="ctaBtn">Prendre rendez-vous — 1h offerte</a>
-    </div>
-
-  </section>
-
-</div>
-
-<!-- ==========================================================
-     LOGIQUE JS
-     ========================================================== -->
 <script>
-(() => {
-  'use strict';
-
-  // ===== DONNÉES MÉTIER =====
-  const ANOMALIES = {
-    liberal_cipav: [
+  // Toutes les catégories d'anomalies disponibles
+  var ALL_ERRORS = {
+    cipav: [
       "Points CIPAV mal comptabilisés sur les premières années d'activité",
       "Assiette de cotisation sous-déclarée en début de carrière libérale",
       "Cotisations versées non converties en droits à pension",
@@ -868,251 +890,283 @@ input[type="number"] {
     liberal_regl: [
       "Cotisations CARMF / CARPIMKO / CARCDSF non intégralement reportées",
       "Périodes de remplacement ou de collaboration non validées",
-      "Trimestres d'assurance manquants dans le régime de base",
-      "Points complémentaires sous-évalués en début de carrière",
-      "Allocations parentales non créditées"
+      "Trimestres d'assurance manquants dans le régime de base CNAVPL",
+      "Incohérence entre assiette déclarée et points section professionnelle",
+      "Majoration pour enfants absente ou incomplète (régime de base)"
     ],
     tns: [
-      "Trimestres SSI / ex-RSI manquants ou mal reportés",
-      "Périodes de chômage non indemnisé non validées",
-      "Cotisations forfaitaires de début d'activité sous-déclarées",
-      "Absence de prise en compte d'un statut antérieur (salarié, AE)",
-      "Rachat de trimestres possible et non exploité"
+      "Trimestres SSI (ex-RSI) non validés sur les premières années d'activité",
+      "Assiettes de cotisation sous le seuil de validation (150 h × SMIC)",
+      "Périodes d'activité saisonnière ou partielle non comptabilisées",
+      "Erreurs de rattachement lors de la fusion RSI → Sécurité Sociale des Indépendants",
+      "Régularisations URSSAF non répercutées sur le relevé de carrière"
     ],
     gerant: [
-      "Rémunération de gérance partiellement reportée à l'Agirc-Arrco",
-      "Périodes de mandat social non comptabilisées",
-      "Cotisations sur dividendes oubliées (gérant majoritaire)",
-      "Trimestres mixtes salarié / TNS mal articulés",
-      "Surcote ou décote mal calculée à la liquidation"
+      "Assimilation salarié / TNS mal qualifiée selon la structuration capitalistique",
+      "Cotisations retraite supplémentaire (art. 83, PERO) non optimisées",
+      "Périodes de cumul mandat social + contrat de travail non retracées",
+      "Validation des trimestres sur rémunérations faibles de début de mandat",
+      "Absence d'arbitrage entre régime général et Agirc-Arrco pour les points cadre"
+    ],
+    transition: [
+      "Multi-affiliation non réconciliée : chevauchements de périodes entre régimes",
+      "Trimestres perdus lors du changement de caisse d'affiliation",
+      "Coordinations CNAV / CNAVPL non opérées correctement",
+      "Droits dormants dans une ancienne caisse non liquidée"
+    ],
+    longue_duree: [
+      "Carrière longue : conditions de départ anticipé non vérifiées",
+      "Rachats de trimestres opportunistes non évalués",
+      "Surcote non maximisée sur les trimestres cotisés au-delà de la durée requise"
+    ],
+    revenu_eleve: [
+      "Plafond de la Sécurité Sociale (PASS) mal appliqué sur certaines années",
+      "Cotisations déplafonnées mal reportées dans le relevé de carrière",
+      "Impact des revenus exceptionnels sur l'assiette de liquidation non étudié"
     ]
   };
 
-  const STATUT_FACTOR = { liberal_cipav: 1.0, liberal_regl: 0.95, tns: 0.85, gerant: 0.9 };
-  const DUREE_FACTOR  = { moins5: 0.4, '5a10': 0.7, '10a20': 1.0, plus20: 1.3 };
-  const REVENUS_FACTOR = { moins50: 0.6, '50a100': 1.0, '100a200': 1.4, plus200: 1.8 };
-  const TRANSITIONS_FACTOR = { aucune: 1.0, une: 1.15, deux_plus: 1.35 };
-
-  const STATUT_LABELS = {
-    liberal_cipav: 'Profession libérale (CIPAV)',
-    liberal_regl: 'Libéral réglementé (CARMF/CARPIMKO…)',
-    tns: 'TNS / Indépendant (SSI)',
-    gerant: 'Dirigeant de société'
-  };
-  const DUREE_LABELS = { moins5: '< 5 ans', '5a10': '5 à 10 ans', '10a20': '10 à 20 ans', plus20: '> 20 ans' };
-  const REVENUS_LABELS = { moins50: '< 50 k€', '50a100': '50 à 100 k€', '100a200': '100 à 200 k€', plus200: '> 200 k€' };
-  const TRANSITIONS_LABELS = { aucune: 'Aucune', une: '1 transition', deux_plus: '2 transitions ou plus' };
-
-  // ===== ÉTAT FORMULAIRE =====
-  const state = { age: null, statut: null, duree: null, revenus: null, transitions: null };
-
-  // ===== UTILS =====
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
-  function updateProgress() {
-    const steps = [
-      !!state.age,
-      !!state.statut,
-      !!state.duree,
-      !!state.revenus
-    ];
-    steps.forEach((done, i) => {
-      const el = $('#pb' + (i + 1));
-      if (!el) return;
-      el.classList.toggle('done', done);
-      el.classList.toggle('active', !done && steps.slice(0, i).every(Boolean));
-    });
+  function getCoefficients(statut, duree, revenus, transitions) {
+    var cs = { liberal_cipav: 1.30, liberal_reglemente: 1.20, tns: 1.10, gerant: 0.90 }[statut] || 1.0;
+    var cd = { moins5: 0.70, '5a10': 0.90, '10a20': 1.10, plus20: 1.30 }[duree] || 1.0;
+    var cr = { moins50: 0.80, '50a100': 1.00, '100a200': 1.15, plus200: 1.30 }[revenus] || 1.0;
+    var ct = { aucune: 1.00, une: 1.10, deux_plus: 1.25 }[transitions] || 1.0;
+    return { cs: cs, cd: cd, cr: cr, ct: ct };
   }
 
-  // Âge
-  $('#ageInput').addEventListener('input', e => {
-    const v = parseInt(e.target.value, 10);
-    state.age = (v >= 35 && v <= 75) ? v : null;
-    updateProgress();
-  });
+  function selectErrorCategories(statut, duree, revenus, transitions, count) {
+    var pool = [];
+    // Always add statut-specific errors
+    var keyMap = { liberal_cipav: 'cipav', liberal_reglemente: 'liberal_regl', tns: 'tns', gerant: 'gerant' };
+    var statErrors = ALL_ERRORS[keyMap[statut]] || ALL_ERRORS.cipav;
+    pool = pool.concat(statErrors.slice(0, Math.min(3, count)));
 
-  // Radio statut
-  $$('input[name="statut"]').forEach(input => {
-    input.addEventListener('change', () => { state.statut = input.value; updateProgress(); });
-  });
+    if (transitions !== 'aucune') {
+      pool = pool.concat(ALL_ERRORS.transition.slice(0, transitions === 'deux_plus' ? 2 : 1));
+    }
+    if (duree === 'plus20' || duree === '10a20') {
+      pool = pool.concat(ALL_ERRORS.longue_duree.slice(0, 1));
+    }
+    if (revenus === 'plus200' || revenus === '100a200') {
+      pool = pool.concat(ALL_ERRORS.revenu_eleve.slice(0, 1));
+    }
 
-  // Pills (durée, revenus, transitions)
-  $$('.pill-grid').forEach(grid => {
-    const field = grid.dataset.field;
-    grid.addEventListener('click', e => {
-      const btn = e.target.closest('.pill');
-      if (!btn) return;
-      $$('.pill', grid).forEach(p => p.classList.remove('selected'));
-      btn.classList.add('selected');
-      state[field] = btn.dataset.value;
-      updateProgress();
-    });
-  });
+    // Trim to desired count
+    return pool.slice(0, count);
+  }
 
-  // ===== CALCUL =====
   function calculate() {
-    const { age, statut, duree, revenus, transitions } = state;
-    const base = 280;
-    const ageFactor = age >= 60 ? 1.4 : (age >= 55 ? 1.2 : 1.0);
-    const monthly = Math.round(
-      base
-      * STATUT_FACTOR[statut]
-      * DUREE_FACTOR[duree]
-      * REVENUS_FACTOR[revenus]
-      * (TRANSITIONS_FACTOR[transitions] || 1.0)
-      * ageFactor
-    );
-    const yearsLeft = Math.max(0, 67 - age);
-    const yearsRetirement = 22;
-    const total20 = monthly * 12 * yearsRetirement;
-    let riskLevel, riskLabel;
-    if (monthly < 200) { riskLevel = 'low'; riskLabel = 'Écart potentiel modéré identifié'; }
-    else if (monthly < 500) { riskLevel = 'medium'; riskLabel = 'Écart potentiel significatif identifié'; }
-    else { riskLevel = 'high'; riskLabel = 'Écart potentiel élevé identifié'; }
-    const anomalies = ANOMALIES[statut].slice(0, 3 + (revenus === 'plus200' || revenus === '100a200' ? 1 : 0));
-    return { monthly, total20, anomalies, riskLevel, riskLabel, catCount: anomalies.length };
-  }
+    var age = parseInt(document.getElementById('ageInput').value, 10);
+    var statut = document.querySelector('input[name="statut"]:checked');
+    var duree = document.querySelector('input[name="duree"]:checked');
+    var revenus = document.querySelector('input[name="revenus"]:checked');
+    var transitions = document.querySelector('input[name="transitions"]:checked');
+    var errorMsg = document.getElementById('errorMsg');
 
-  // ===== AFFICHAGE RÉSULTATS =====
-  function displayResults(r) {
-    const badge = $('#riskBadge');
-    badge.textContent = r.riskLabel;
-    badge.className = 'risk-badge ' + r.riskLevel;
-
-    $('#metricMonthly').textContent = r.monthly.toLocaleString('fr-FR');
-    $('#metricTotal').textContent = r.total20.toLocaleString('fr-FR');
-    $('#metricCat').textContent = r.catCount;
-
-    const list = $('#anomaliesList');
-    list.innerHTML = '';
-    r.anomalies.forEach(a => {
-      const li = document.createElement('li');
-      li.textContent = a;
-      list.appendChild(li);
-    });
-
-    $('#results').classList.add('visible');
-    setTimeout(() => $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  }
-
-  // ===== SOUMISSION FORMULAIRE =====
-  $('#simForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const required = ['age', 'statut', 'duree', 'revenus'];
-    const missing = required.filter(k => !state[k]);
-    const errEl = $('#errorMsg');
-    if (missing.length) {
-      errEl.classList.add('visible');
+    if (!age || age < 35 || age > 75 || !statut || !duree || !revenus || !transitions) {
+      errorMsg.style.display = 'block';
       return;
     }
-    errEl.classList.remove('visible');
-    const r = calculate();
-    window.__SIM_RESULT__ = r;
-    displayResults(r);
-  });
+    errorMsg.style.display = 'none';
 
-  // ===== EMAIL GATE =====
-  $('#emailForm').addEventListener('submit', async e => {
-    e.preventDefault();
+    var s = statut.value;
+    var d = duree.value;
+    var r = revenus.value;
+    var t = transitions.value;
+    var c = getCoefficients(s, d, r, t);
 
-    // Honeypot : si le champ caché est rempli, c'est un bot → on bloque silencieusement
-    const hp = $('#hpWebsite');
-    if (hp && hp.value && hp.value.trim() !== '') {
-      console.warn('Honeypot triggered, blocking submission');
-      return;
+    // Monthly loss calculation — age acts as a real differentiator
+    var base = 200;
+    var ageFactor = 1 + (age - 50) * 0.0045; // +0.45% par année au-delà de 50 ans
+    var monthly = Math.round(base * c.cs * c.cd * c.cr * c.ct * ageFactor);
+    monthly = Math.max(75, Math.min(420, monthly));
+
+    var total20 = monthly * 12 * 20;
+
+    // Risk score and level
+    var riskScore = c.cs * c.cd * c.cr * c.ct;
+    var riskLevel, riskColor, riskBg, riskIcon;
+    if (riskScore < 0.65) {
+      riskLevel = 'Risque faible'; riskColor = '#1E6B42'; riskBg = '#EBF7F1'; riskIcon = '🟢';
+    } else if (riskScore < 1.1) {
+      riskLevel = 'Risque modéré'; riskColor = '#8A5A00'; riskBg = '#FFF8E1'; riskIcon = '🟡';
+    } else if (riskScore < 1.6) {
+      riskLevel = 'Risque élevé'; riskColor = '#C0471A'; riskBg = '#FEF3E7'; riskIcon = '🟠';
+    } else {
+      riskLevel = 'Risque très élevé'; riskColor = '#9B1A1A'; riskBg = '#FDECEA'; riskIcon = '🔴';
     }
 
-    const email = $('#emailInput').value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert('Merci de saisir un email valide.');
-      return;
+    // Error categories count
+    var catCount = Math.round(3 + riskScore * 2.2);
+    catCount = Math.max(3, Math.min(8, catCount));
+
+    // Urgency message
+    var retirementAge = 64;
+    var yearsLeft = retirementAge - age;
+    var urgencyHtml = '';
+    if (age >= 64) {
+      urgencyHtml = 'Vous êtes à l\'âge légal de liquidation. Dans certains cas, <strong>une révision de pension reste possible</strong>. Ne tardez pas.';
+    } else if (yearsLeft <= 2) {
+      urgencyHtml = '<strong>Il vous reste ' + yearsLeft + ' an' + (yearsLeft > 1 ? 's' : '') + ' pour agir.</strong> Les régularisations auprès des caisses prennent entre 6 et 18 mois. Chaque mois compte.';
+    } else if (yearsLeft <= 5) {
+      urgencyHtml = '<strong>Il vous reste ' + yearsLeft + ' ans pour corriger votre relevé.</strong> C\'est la fenêtre critique. Au-delà, certaines périodes ne peuvent plus être régularisées.';
+    } else {
+      urgencyHtml = 'Il vous reste <strong>' + yearsLeft + ' ans</strong>. C\'est le bon moment pour agir : plus tôt les erreurs sont corrigées, plus l\'impact cumulé sur votre pension est important.';
     }
 
-    // Validation consentement RGPD obligatoire
-    const consent = $('#rgpdConsent');
-    if (!consent || !consent.checked) {
-      alert('Merci de cocher la case de consentement RGPD pour recevoir votre estimation.');
-      return;
-    }
+    // Error categories list
+    var errors = selectErrorCategories(s, d, r, t, catCount);
 
-    const btn = $('#btnUnlock');
-    btn.disabled = true;
-    btn.textContent = 'Envoi en cours…';
-
-    const r = window.__SIM_RESULT__ || {};
-    const transitionsTxt = state.transitions
-      ? (state.transitions === 'aucune' ? 'Aucune transition' : (TRANSITIONS_LABELS[state.transitions] || state.transitions))
-      : 'Aucune transition';
-    const niveauRisqueTxt = r.riskLevel === 'high' ? 'Risque élevé'
-      : r.riskLevel === 'medium' ? 'Risque significatif'
-      : 'Risque modéré';
-    const payload = {
-      // === Champs attendus par les modules Gmail du scénario Make ===
-      _subject: 'Nouvelle estimation simulateur Cap Retraites',
-      _replyto: email,
-      email: email,
-      email_prospect: email,
-      profil_age: state.age + ' ans',
-      profil_statut: STATUT_LABELS[state.statut] || state.statut,
-      profil_duree: DUREE_LABELS[state.duree] || state.duree,
-      profil_revenus: REVENUS_LABELS[state.revenus] || state.revenus,
-      profil_transitions: transitionsTxt,
-      estimation_mensuelle: (r.monthly || 0).toLocaleString('fr-FR') + ' €/mois',
-      estimation_20ans: (r.total20 || 0).toLocaleString('fr-FR') + ' € sur 20 ans',
-      niveau_risque: niveauRisqueTxt,
-      // === Champs additionnels (compatibilité + données détaillées) ===
-      statut_code: state.statut,
-      duree_code: state.duree,
-      revenus_code: state.revenus,
-      transitions_code: state.transitions || 'aucune',
-      perte_mensuelle_eur: r.monthly,
-      impact_20ans_eur: r.total20,
-      categories_anomalies: r.catCount,
-      anomalies_detectees: r.anomalies,
-      timestamp: new Date().toISOString(),
-      source: 'simulateur-cap-retraites-v2'
+    // STORE calculated values for use after email capture
+    window._simData = {
+      monthly: monthly, total20: total20, catCount: catCount,
+      riskLevel: riskLevel, riskColor: riskColor, riskBg: riskBg, riskIcon: riskIcon,
+      errors: errors, urgencyHtml: urgencyHtml,
+      age: age, statut: s, duree: d, revenus: r, transitions: t
     };
 
-    // Envoi via FormData (multipart/form-data) — CORS-safe, et Make éclate
-    // chaque clé en champ utilisable ({{1.profil_age}}, {{1.email_prospect}}, etc.)
-    let sent = false;
-    if (window.MAKE_WEBHOOK_URL && !window.MAKE_WEBHOOK_URL.startsWith('À_')) {
-      try {
-        const fd = new FormData();
-        Object.entries(payload).forEach(([k, v]) => {
-          if (v === null || v === undefined) return;
-          fd.append(k, typeof v === 'object' ? JSON.stringify(v) : String(v));
-        });
-        if (navigator.sendBeacon) {
-          sent = navigator.sendBeacon(window.MAKE_WEBHOOK_URL, fd);
-        }
-        if (!sent) {
-          // Fallback fetch (mode normal, le navigateur gère le CORS preflight si besoin)
-          await fetch(window.MAKE_WEBHOOK_URL, {
-            method: 'POST',
-            body: fd,
-            keepalive: true
-          });
-          sent = true;
-        }
-      } catch (err) {
-        console.error('Erreur envoi webhook', err);
-      }
-    } else {
-      console.warn('MAKE_WEBHOOK_URL non configurée — payload :', payload);
+    // Update progress
+    ['pb1','pb2','pb3','pb4'].forEach(function(id) {
+      var el = document.getElementById(id);
+      el.classList.remove('active');
+      el.classList.add('done');
+    });
+
+    // Pre-fill hidden form fields for Formspree
+    var statutLabels = {
+      liberal_cipav: 'Profession libérale (CIPAV)',
+      liberal_reglemente: 'Libéral réglementé (CARMF/CARPIMKO…)',
+      tns: 'TNS / Indépendant (SSI)',
+      gerant: 'Dirigeant de société'
+    };
+    var dureeLabels = { moins5: '< 5 ans', '5a10': '5–10 ans', '10a20': '10–20 ans', plus20: '> 20 ans' };
+    var revenuLabels = { moins50: '< 50 k€', '50a100': '50–100 k€', '100a200': '100–200 k€', plus200: '> 200 k€' };
+    var transLabels = { aucune: 'Aucune transition', une: '1 transition', deux_plus: '2 transitions ou plus' };
+
+    document.getElementById('hiddenAge').value = age + ' ans';
+    document.getElementById('hiddenStatut').value = statutLabels[s] || s;
+    document.getElementById('hiddenDuree').value = dureeLabels[d] || d;
+    document.getElementById('hiddenRevenus').value = revenuLabels[r] || r;
+    document.getElementById('hiddenTransitions').value = transLabels[t] || t;
+    document.getElementById('hiddenMonthly').value = monthly.toLocaleString('fr-FR') + ' €/mois';
+    document.getElementById('hiddenTotal').value = total20.toLocaleString('fr-FR') + ' € sur 20 ans';
+    document.getElementById('hiddenRisk').value = riskLevel;
+
+    // Show email gate
+    document.getElementById('emailGate').classList.add('visible');
+    document.getElementById('emailGate').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  var freeEmailDomains = ['gmail.com','googlemail.com','hotmail.com','hotmail.fr','hotmail.be','outlook.com','outlook.fr','live.com','live.fr','msn.com','yahoo.com','yahoo.fr','yahoo.be','ymail.com','icloud.com','me.com','mac.com','aol.com','wanadoo.fr','orange.fr','free.fr','sfr.fr','laposte.net','bbox.fr','numericable.fr','club-internet.fr','neuf.fr','aliceadsl.fr','libertysurf.fr','voila.fr','noos.fr','caramail.com','tiscali.fr','9online.fr'];
+
+  function submitEmail(e) {
+    e.preventDefault();
+    var email = document.getElementById('emailInput').value.trim().toLowerCase();
+    var domain = email.split('@')[1] || '';
+    var errorMsg = document.getElementById('emailErrorMsg');
+    if (!email || !email.includes('@') || !domain) {
+      errorMsg.textContent = 'Merci d\'entrer un email valide.';
+      errorMsg.style.display = 'block';
+      return;
     }
+    if (freeEmailDomains.indexOf(domain) !== -1) {
+      errorMsg.textContent = 'Email professionnel uniquement.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+    errorMsg.style.display = 'none';
+    document.getElementById('hiddenReplyTo').value = email;
 
-    // Affiche CTA final RDV (le href est déjà câblé en dur dans l'HTML)
-    $('#emailGate').classList.remove('visible');
-    const cta = $('#ctaFinal');
-    cta.classList.add('visible');
-    setTimeout(() => cta.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    // Send to Formspree (replace YOUR_FORM_ID with your Formspree ID)
+    var form = document.getElementById('emailForm');
+    var formData = new FormData(form);
+    formData.append('email_prospect', email);
+
+    fetch('https://hook.eu1.make.com/5kuyavl7al0eo955jv3bf75zafglx7qo', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    }).catch(function() {
+      // Silent fail — don't block user from seeing results
+    });
+
+    // Hide gate, show results
+    document.getElementById('emailGate').style.display = 'none';
+    showResults();
+  }
+
+  function showResults() {
+    var d = window._simData;
+    if (!d) return;
+
+    document.getElementById('metricMonthly').textContent = d.monthly.toLocaleString('fr-FR');
+    document.getElementById('metric20ans').textContent = d.total20.toLocaleString('fr-FR');
+    document.getElementById('metricCats').textContent = d.errors.length;
+
+    var badge = document.getElementById('riskBadge');
+    badge.innerHTML = d.riskIcon + ' ' + d.riskLevel + ' détecté sur votre profil';
+    badge.style.background = d.riskBg;
+    badge.style.color = d.riskColor;
+    badge.style.border = '1px solid ' + d.riskColor + '40';
+
+    var catList = document.getElementById('errorCatsList');
+    catList.innerHTML = '';
+    d.errors.forEach(function(err) {
+      var div = document.createElement('div');
+      div.className = 'error-cat';
+      div.innerHTML = '<div class="error-cat-dot"></div><span>' + err + '</span>';
+      catList.appendChild(div);
+    });
+
+    document.getElementById('urgencyMsg').innerHTML = d.urgencyHtml;
+    document.getElementById('results').classList.add('visible');
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function reset() {
+    document.getElementById('results').classList.remove('visible');
+    document.getElementById('emailGate').classList.remove('visible');
+    document.getElementById('emailGate').style.display = '';
+    document.getElementById('emailInput').value = '';
+    window._simData = null;
+    ['pb1','pb2','pb3','pb4'].forEach(function(id, i) {
+      var el = document.getElementById(id);
+      el.classList.remove('done');
+      if (i === 0) el.classList.add('active');
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Live progress tracking
+  var fields = ['ageInput', 'statut', 'duree', 'revenus', 'transitions'];
+  function updateProgress() {
+    var age = document.getElementById('ageInput').value;
+    var statut = document.querySelector('input[name="statut"]:checked');
+    var duree = document.querySelector('input[name="duree"]:checked');
+    var revenus = document.querySelector('input[name="revenus"]:checked');
+    var transitions = document.querySelector('input[name="transitions"]:checked');
+    var steps = [
+      age && age >= 35 && age <= 75,
+      !!statut,
+      !!duree,
+      !!revenus && !!transitions
+    ];
+    var doneCount = steps.filter(Boolean).length;
+    ['pb1','pb2','pb3','pb4'].forEach(function(id, i) {
+      var el = document.getElementById(id);
+      el.classList.remove('done','active');
+      if (i < doneCount) el.classList.add('done');
+      else if (i === doneCount) el.classList.add('active');
+    });
+  }
+
+  document.getElementById('ageInput').addEventListener('input', updateProgress);
+  document.querySelectorAll('input[name="statut"], input[name="duree"], input[name="revenus"], input[name="transitions"]')
+    .forEach(function(el) { el.addEventListener('change', updateProgress); });
+
+  document.getElementById('ageInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') calculate();
   });
-
-  // Init
-  updateProgress();
-})();
 </script>
 
 </body>
