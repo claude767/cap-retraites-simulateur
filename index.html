@@ -1057,7 +1057,7 @@
     document.getElementById('emailGate').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  var freeEmailDomains = ['gmail.com','googlemail.com','hotmail.com','hotmail.fr','hotmail.be','outlook.com','outlook.fr','live.com','live.fr','msn.com','yahoo.com','yahoo.fr','yahoo.be','ymail.com','icloud.com','me.com','mac.com','aol.com','wanadoo.fr','orange.fr','free.fr','sfr.fr','laposte.net','bbox.fr','numericable.fr','club-internet.fr','neuf.fr','aliceadsl.fr','libertysurf.fr','voila.fr','noos.fr','caramail.com','tiscali.fr','9online.fr'];
+  var freeEmailDomains = [];
 
   function submitEmail(e) {
     e.preventDefault();
@@ -1066,11 +1066,6 @@
     var errorMsg = document.getElementById('emailErrorMsg');
     if (!email || !email.includes('@') || !domain) {
       errorMsg.textContent = 'Merci d\'entrer un email valide.';
-      errorMsg.style.display = 'block';
-      return;
-    }
-    if (freeEmailDomains.indexOf(domain) !== -1) {
-      errorMsg.textContent = 'Email professionnel uniquement.';
       errorMsg.style.display = 'block';
       return;
     }
